@@ -1148,7 +1148,7 @@ generateHealBlackHole(max) {
     if (this.postGameStage === 0) {
     // 第一步：结算信息 + 按任意键继续
     textSize(40);
-    text(`🎉 ${this.name} 完成！`, windowWidth / 2, windowHeight / 2 - 100);
+    text(`${this.name} 完成！`, windowWidth / 2, windowHeight / 2 - 100);
 
     textSize(24);
     text(`Area Score: ${this.baseScore}`, windowWidth / 2, windowHeight / 2 - 30);
@@ -1437,7 +1437,7 @@ class Level2 extends BaseLevel {
     this.pauseTimer = millis() + 10000;  // 10秒后触发黑洞暂停提示
 
     // FollowEnemy
-    this.generateFollowEnemy(isHardMode? 40 : 20); 
+    this.generateFollowEnemy(isHardMode? 40 : 25); 
     // CommonEnemy
     this.generateCommonEnemy(isHardMode? 50 : 30); 
 
@@ -3389,7 +3389,7 @@ class AttackBoostSkill extends Skill {
 
   class DashSkill extends Skill {
   constructor(player,enemies) {
-    super("Phantom Dash", "", 3); // 冲刺技能冷却
+    super("Phantom Dash", "", 4); // 冲刺技能冷却
     this.dashDamage = 20; // 冲刺时撞敌造成5伤害
     this.isDashing = false; // 冲刺中标记
     this.originalSpeed = 0; // 记录冲刺前的速度
@@ -3756,7 +3756,7 @@ class BloodFurySkill extends Skill {
 
 class ReflectSkill extends Skill {
   constructor(player) {
-    super("Iron Reversal", "", 6); // 名称、快捷键占位、冷却秒数
+    super("Iron Reversal", "", 8); // 名称、快捷键占位、冷却秒数
     this.player = player;
 
     this.duration = 4 * 1000; // 持续时间：4秒
@@ -3828,7 +3828,7 @@ class SlowFieldSkill extends Skill {
               slowMul  = 0.1,
               duration = 5000) {
 
-    super("Anchor Field", "", 8);     // 名称 / 触发键 / 冷却秒数
+    super("Anchor Field", "", 9);     // 名称 / 触发键 / 冷却秒数
     this.player   = player;
     this.enemies  = enemies;
 
