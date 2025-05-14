@@ -640,14 +640,12 @@ function keyPressed() {
 
   /* ---------- 普攻 ---------- */
   if (key.toLowerCase() === 'a') {
-    if (!player.isCharging) {          // 正在蓄力时禁止普通攻击
-      player.meleeAttack.trigger();
-      if (!player.isCharging) {
-         player.meleeAttack.trigger();
-         SFX.play("attack");
-        }
-      
-    } else {
+    if (!player.isCharging) {
+    const success = player.meleeAttack.trigger();
+    if (success) {
+    SFX.play("attack"); // ✅ 只在攻击真正触发时播放音效
+    }
+      } else {
       console.log("⚠️ 蓄力中，A 键被忽略");
     }
     // 关卡 1 需要知道玩家攻击
@@ -1447,7 +1445,7 @@ class Level2 extends BaseLevel {
     this.generateTimeBonus(3); // 刷奖励物
 
     // 刷黑洞
-    this.generateDangerBlackHole(isHardMode? 7 : 5); // 刷危险黑洞
+    this.generateDangerBlackHole(isHardMode? 3 : 2); // 刷危险黑洞
     this.generateHealBlackHole(isHardMode? 0 : 2); // 刷治疗黑洞
 
     // 设置倒计时
@@ -1529,10 +1527,10 @@ class Level3 extends BaseLevel {
     // 刷敌人
     
     // FollowEnemy
-    this.generateFollowEnemy(isHardMode? 12 : 8); 
+    this.generateFollowEnemy(isHardMode? 40 : 20); 
 
     // CommonEnemy
-    this.generateCommonEnemy(isHardMode? 17: 12); 
+    this.generateCommonEnemy(isHardMode? 50: 30); 
 
     // 刷黑洞
     this.generateDangerBlackHole(isHardMode? 5 : 3); // 刷危险黑洞
@@ -1613,10 +1611,10 @@ class Level4 extends BaseLevel{
       this.generateBulletEnemy(isHardMode? 5 : 3); // 刷弹幕怪
   
       // FollowEnemy
-      this.generateFollowEnemy(isHardMode? 15 : 10);
+      this.generateFollowEnemy(isHardMode? 15 : 20);
   
       // CommonEnemy
-      this.generateCommonEnemy(isHardMode? 20 : 15);
+      this.generateCommonEnemy(isHardMode? 20 : 30);
   
       // 刷黑洞
       this.generateDangerBlackHole(isHardMode? 4 : 2); // 刷危险黑洞
@@ -1636,7 +1634,7 @@ class Level4 extends BaseLevel{
 update() {
   super.update();
   if (this.stage === 1) {
-     updateStealthSpawn(isHardMode ? 35 : 25); // ✅ 每帧尝试生成隐身怪
+     updateStealthSpawn(isHardMode ? 28 : 20); // ✅ 每帧尝试生成隐身怪
         updateAmbushSpawn(isHardMode ? 15 : 9); // ✅ 每帧尝试生成伏击怪
     // 检查完成
     if (!this.finished && remainingTime <= 0) {
@@ -1835,7 +1833,7 @@ class Player {
   constructor(x, y, r) {
     this.pos = createVector(x, y);
     this.r = 35;
-    this.speed = 4;
+    this.speed = 4.5;
 
 
     
@@ -1875,10 +1873,10 @@ class Player {
     if (this.isInBloodFury) {
   // 每帧添加一颗火焰粒子
   const p = {
-    pos: this.pos.copy().add(p5.Vector.random2D().mult(random(10, 25))), // ← 更远的半径范围
+    pos: this.pos.copy().add(p5.Vector.random2D().mult(random(15, 35))), // ← 更远的半径范围
 vel: createVector(random(-1, 1), random(-2, -1)), // ← 更强的上飘速度
     alpha: 255,
-    size: random(6, 10),
+    size: random(8, 12),
     color: color(255, random(80, 120), 0)
   };
   this.furyParticles.push(p);
@@ -2075,7 +2073,7 @@ class Enemy {
     this.pos = createVector(x, y);  // Initial position of enemies
     this.hp = new HPSystem(60);     
     this.dead = false;              // Death Mark
-  
+    this.speed = 3.3; // Speed of enemies
     this.exploding = false; // Whether to play death effects
     this.explodeStartTime = 0; // Death animation start time
     this.explodeDuration = 1000; 
@@ -2084,7 +2082,7 @@ class Enemy {
 
      // Each enemy has its own attack cooldown time
      this.nextHitTime = 0;
-     this.hitCooldown = 500;
+     this.hitCooldown = 800;
 
      this.contactDamage = 10; // Default contact damage
   
@@ -2153,7 +2151,6 @@ class FollowEnemy extends Enemy {
   constructor(x, y) {
     super(x, y);
     this.r = 35;
-    this.speed = 3.6; // 速度稍慢于玩家 
     this.hp = new HPSystem(100); 
     this.contactDamage = 15; // 接触伤害
     this.scaleFactor = 2;//大小
@@ -2310,8 +2307,8 @@ class StealthEnemy extends Enemy {
     this.detectRange = 350;
     this.chaseRange = 200;
     this.isChasing = false;
-    this.stealthSpeed = 3;
-    this.slowSpeed = 2;
+    this.stealthSpeed = 3.8;
+    this.slowSpeed = 2.5;
     this.target = createVector(random(width * 2) - width, random(height * 2) - height); // ✅ 必须初始化
   }
 
@@ -2528,7 +2525,6 @@ class CommonEnemy extends Enemy {
     super(x, y);
     this.r = 20;             // 比精英怪小
     this.hp = new HPSystem(60); // 较低血量
-    this.speed = 3.6;        // 稍快的移动速度
     this.scaleFactor = 1.8;//大小
     this.spriteImg = common_gif;  // 比如 bulletEnemyImg
     this.flip = false;  // 初始是否翻转，可以动态更新
@@ -3394,7 +3390,7 @@ class AttackBoostSkill extends Skill {
   class DashSkill extends Skill {
   constructor(player,enemies) {
     super("Phantom Dash", "", 3); // 冲刺技能冷却
-    this.dashDamage = 40; // 冲刺时撞敌造成5伤害
+    this.dashDamage = 20; // 冲刺时撞敌造成5伤害
     this.isDashing = false; // 冲刺中标记
     this.originalSpeed = 0; // 记录冲刺前的速度
     this.dashedEnemies = []; // 已经撞过的敌人列表
@@ -3558,14 +3554,14 @@ class DashResetSkill extends Skill {
 /* ---------- ChargeStrikeSkill ---------- */
 class ChargeStrikeSkill extends Skill {
   constructor(player, enemies) {
-    super("Wrath Unchained", "", 7);
+    super("Wrath Unchained", "", 9);
     this.player        = player;
     this.enemies       = enemies;
 
     this.chargeDuration = 2000;  // ms
     this.range          = 100;   // 蓄满后的最大攻击半径
     this.minRange       = 20;    // 起始提示半径
-    this.chargeAttack = 100;      // 高额范围伤害
+    this.chargeAttack = 50;      // 高额范围伤害
 
     this.isCharging = false;
     this.startTime  = 0;
@@ -3579,7 +3575,7 @@ class ChargeStrikeSkill extends Skill {
     this.startTime       = millis();
 
     this.player.isCharging        = true;   // 禁止位移
-    this.player.damageMultiplier  = 0.2;    // 蓄力期间减伤
+    this.player.damageMultiplier  = 0.5;    // 蓄力期间减伤
     this.player.spriteMgr.request("charge", this.chargeDuration, 1);
   }
 
@@ -3688,10 +3684,10 @@ class ChargeStrikeSkill extends Skill {
 
 class LifestealSkill extends Skill {
   constructor(player) {
-    super("Crimson Drain", "", 5); // 技能名称、按键、冷却秒数
+    super("Crimson Drain", "", 8); // 技能名称、按键、冷却秒数
     this.player = player;
-    this.lifestealRatio = 0.5; // 吸血比例
-    this.duration = 5000; // 持续时间（毫秒）
+    this.lifestealRatio = 0.3; // 吸血比例
+    this.duration = 4000; // 持续时间（毫秒）
     this.active = false;
     this.endTime = 0;
   }
@@ -3738,14 +3734,14 @@ class BloodFurySkill extends Skill {
   update() {
     let hpRatio = this.player.hp.currentHP / this.player.hp.maxHP;
 
-    if (!this.isBoosting && hpRatio <= 0.3) {
+    if (!this.isBoosting && hpRatio <= 0.35) {
       this.isBoosting = true; // 进入血怒状态
       player.isInBloodFury = true; // 进入血怒状态
       console.log("🩸 血怒开始，攻击力提高");
      
     }
 
-    if (this.isBoosting && hpRatio > 0.3) {
+    if (this.isBoosting && hpRatio > 0.35) {
      this.isBoosting = false; // 结束血怒状态
      player.isInBloodFury = false;
       console.log("🩸 血怒结束，攻击力恢复基础值");
@@ -3942,7 +3938,7 @@ else if (this.slowed.has(enemy)) {
 
      if (enemy instanceof StealthEnemy) {
       
-        enemy.stealthSpeed = 3.5; // 恢复原速度
+        enemy.stealthSpeed = 3.8; // 恢复原速度
         console.log("隐身敌人速度恢复为:", enemy.stealthSpeed);
       
 
@@ -4014,7 +4010,7 @@ for (let enemy of this.slowField.slowed) {
 
 if (totalDamage > 0) {
   console.log(`⚡ 总共造成 ${totalDamage} 点真实伤害`);
-  const shield = Math.floor(totalDamage * 1); // 50% 转化为护盾
+  const shield = Math.floor(totalDamage * 0.25); // 50% 转化为护盾
   this.player.pendingBonusShield += shield;
   console.log(`🛡️ 转化为 ${shield} 点护盾`);
 }
@@ -4318,6 +4314,9 @@ class MeleeAttack {
     this.frameStartTime= millis();
     this.hitEnemies.clear(); // ✅ 初始化已击中敌人列表
     this.player.isAttacking = true;   // 切到攻击 GIF流派系统改动
+    
+    return true; // ✅ 成功触发
+  
   }
 
   update() {
