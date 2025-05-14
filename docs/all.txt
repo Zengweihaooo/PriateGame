@@ -1,0 +1,1922 @@
+===== SKIPPED (binary) ./.DS_Store =====
+
+===== ./BG.html =====
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Random Rotating Tiled Background + Arrow Key Control</title>
+  <style>
+    html, body {
+      margin: 0; padding: 0;
+      overflow: hidden;
+      background: #000;
+      height: 100%;
+    }
+    #gameCanvas {
+      display: block;
+      background: transparent;
+      border: none;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="gameCanvas"></canvas>
+
+  <script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx    = canvas.getContext('2d');
+
+    // get initial level from URL or default to 1
+    const params = new URLSearchParams(location.search);
+    let level = parseInt(params.get('level')) || 1;
+
+    // listen for level update from parent
+    window.addEventListener('message', e => {
+      if (e.data?.type === 'level' && typeof e.data.level === 'number') {
+        level = e.data.level;
+        loadLevelImage();
+      }
+    });
+
+    // resize canvas to fill window
+    function resizeCanvas() {
+      canvas.width  = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    // load the tile image for current level
+    let img = new Image();
+    function loadLevelImage() {
+      img.src = `assets/media/BG${level}.png`;
+    }
+    loadLevelImage();
+
+    // calculate stable rotation angle for tile at [i, j]
+    function getRotationAngle(i, j) {
+      const seed = (i * 374761393 + j * 668265263) & 3;
+      return [0, 90, 180, 270][seed] * Math.PI / 180;
+    }
+
+    // draw infinite tiled background with random rotations
+    function drawBackground(offsetX, offsetY) {
+      const tw = img.width, th = img.height;
+      if (!tw || !th) return;
+      const cols = Math.ceil(canvas.width / tw) + 2;
+      const rows = Math.ceil(canvas.height / th) + 2;
+      const startCol = Math.floor(offsetX / tw);
+      const startRow = Math.floor(offsetY / th);
+
+      for (let i = startCol; i < startCol + cols; i++) {
+        for (let j = startRow; j < startRow + rows; j++) {
+          const x = i * tw - offsetX;
+          const y = j * th - offsetY;
+          const angle = getRotationAngle(i, j);
+          ctx.save();
+          ctx.translate(x + tw / 2, y + th / 2);
+          ctx.rotate(angle);
+          ctx.drawImage(img, -tw / 2, -th / 2);
+          ctx.restore();
+        }
+      }
+    }
+
+    // track arrow key states from parent messages
+    const keys = {};
+    window.addEventListener('message', e => {
+      if (e.data?.type === 'keydown') keys[e.data.key] = true;
+      if (e.data?.type === 'keyup')   keys[e.data.key] = false;
+    });
+
+    let offsetX = 0, offsetY = 0;
+    const SPEED = 200;
+    let lastTime = 0;
+
+    // animation loop to update offsets and redraw
+    function loop(timestamp) {
+      const dt = (timestamp - lastTime) / 1000;
+      lastTime = timestamp;
+
+      if (keys['ArrowUp'])    offsetY -= SPEED * dt;
+      if (keys['ArrowDown'])  offsetY += SPEED * dt;
+      if (keys['ArrowLeft'])  offsetX -= SPEED * dt;
+      if (keys['ArrowRight']) offsetX += SPEED * dt;
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      if (img.complete) drawBackground(offsetX, offsetY);
+      requestAnimationFrame(loop);
+    }
+
+    // start loop after image loads
+    img.onload = () => {
+      requestAnimationFrame(time => {
+        lastTime = time;
+        loop(time);
+      });
+    };
+  </script>
+
+  <script>
+    // listen for Escape key to pause game
+    window.addEventListener('keydown', e => {
+      if (e.key === 'Escape') {
+        parent.postMessage({ type: 'pause_menu' }, '*');
+        e.preventDefault();
+      }
+    });
+  </script>
+</body>
+</html>
+
+===== SKIPPED (binary) ./assets/.DS_Store =====
+
+===== SKIPPED (binary) ./assets/font/Minecraft.ttf =====
+
+===== SKIPPED (binary) ./assets/media/.DS_Store =====
+
+===== SKIPPED (binary) ./assets/media/BG1.png =====
+
+===== SKIPPED (binary) ./assets/media/BG2.png =====
+
+===== SKIPPED (binary) ./assets/media/BG3.png =====
+
+===== SKIPPED (binary) ./assets/media/BG4.png =====
+
+===== SKIPPED (binary) ./assets/media/BG5.png =====
+
+===== SKIPPED (binary) ./assets/media/Visualeffect/boost.gif =====
+
+===== SKIPPED (binary) ./assets/media/Visualeffect/boss-blackhole.gif =====
+
+===== SKIPPED (binary) ./assets/media/Visualeffect/boss-dash-explore.gif =====
+
+===== SKIPPED (binary) ./assets/media/Visualeffect/boss-puff.gif =====
+
+===== SKIPPED (binary) ./assets/media/Visualeffect/boss-summon.gif =====
+
+===== SKIPPED (binary) ./assets/media/Visualeffect/boss-wave.gif =====
+
+===== SKIPPED (binary) ./assets/media/Visualeffect/character-dash-puff.gif =====
+
+===== SKIPPED (binary) ./assets/media/Visualeffect/character-idle-puff.gif =====
+
+===== SKIPPED (binary) ./assets/media/Visualeffect/charge.gif =====
+
+===== SKIPPED (binary) ./assets/media/Visualeffect/shield.gif =====
+
+===== SKIPPED (binary) ./assets/media/Visualeffect/steal.gif =====
+
+===== SKIPPED (binary) ./assets/media/audio/attack.mp3 =====
+
+===== SKIPPED (binary) ./assets/media/audio/boost.mp3 =====
+
+===== SKIPPED (binary) ./assets/media/audio/charge.mp3 =====
+
+===== SKIPPED (binary) ./assets/media/audio/dash.mp3 =====
+
+===== SKIPPED (binary) ./assets/media/audio/finalboss.mp3 =====
+
+===== SKIPPED (binary) ./assets/media/audio/lifesteal.mp3 =====
+
+===== SKIPPED (binary) ./assets/media/audio/reflect.mp3 =====
+
+===== SKIPPED (binary) ./assets/media/audio/slow.mp3 =====
+
+===== SKIPPED (binary) ./assets/media/audio/stage.mp3 =====
+
+===== SKIPPED (binary) ./assets/media/boss/BOSS_BLACKHOLE_SKILL.gif =====
+
+===== SKIPPED (binary) ./assets/media/boss/BOSS_DASH.gif =====
+
+===== SKIPPED (binary) ./assets/media/boss/BOSS_DASH_EXPLODE.gif =====
+
+===== SKIPPED (binary) ./assets/media/boss/BOSS_IDLE.gif =====
+
+===== SKIPPED (binary) ./assets/media/boss/BOSS_SUMMON.gif =====
+
+===== SKIPPED (binary) ./assets/media/boss/BOSS_TOWER_SKILL.gif =====
+
+===== SKIPPED (binary) ./assets/media/boss/BOSS_WAVE.gif =====
+
+===== SKIPPED (binary) ./assets/media/boss/BOSS_WAVE_BOSS.gif =====
+
+===== SKIPPED (binary) ./assets/media/boss/TOWER.gif =====
+
+===== SKIPPED (binary) ./assets/media/bullet/Boss-bullet.gif =====
+
+===== SKIPPED (binary) ./assets/media/bullet/Character-rebound-bullet.gif =====
+
+===== SKIPPED (binary) ./assets/media/bullet/Monster-bullet.gif =====
+
+===== SKIPPED (binary) ./assets/media/character/agile-attack-base.gif =====
+
+===== SKIPPED (binary) ./assets/media/character/agile-attack-boost.gif =====
+
+===== SKIPPED (binary) ./assets/media/character/agile-idle-base.gif =====
+
+===== SKIPPED (binary) ./assets/media/character/agile-idle-boost.gif =====
+
+===== SKIPPED (binary) ./assets/media/character/agile-idle-dash.gif =====
+
+===== SKIPPED (binary) ./assets/media/character/dash.png =====
+
+===== SKIPPED (binary) ./assets/media/character/normal-attack-base.gif =====
+
+===== SKIPPED (binary) ./assets/media/character/normal-attack-boost.gif =====
+
+===== SKIPPED (binary) ./assets/media/character/normal-attack-charge.gif =====
+
+===== SKIPPED (binary) ./assets/media/character/normal-attack-shield.gif =====
+
+===== SKIPPED (binary) ./assets/media/character/normal-attack-steal.gif =====
+
+===== SKIPPED (binary) ./assets/media/character/normal-idle-base.gif =====
+
+===== SKIPPED (binary) ./assets/media/character/normal-idle-boost.gif =====
+
+===== SKIPPED (binary) ./assets/media/character/normal-idle-dash.gif =====
+
+===== SKIPPED (binary) ./assets/media/character/normal-idle-shield.gif =====
+
+===== SKIPPED (binary) ./assets/media/character/normal-idle-steal.gif =====
+
+===== SKIPPED (binary) ./assets/media/character/power-attack-base.gif =====
+
+===== SKIPPED (binary) ./assets/media/character/power-attack-charge.gif =====
+
+===== SKIPPED (binary) ./assets/media/character/power-attack-steal.gif =====
+
+===== SKIPPED (binary) ./assets/media/character/power-idle-base.gif =====
+
+===== SKIPPED (binary) ./assets/media/character/power-idle-steal.gif =====
+
+===== SKIPPED (binary) ./assets/media/character/tank-attack-base.gif =====
+
+===== SKIPPED (binary) ./assets/media/character/tank-attack-shield.gif =====
+
+===== SKIPPED (binary) ./assets/media/character/tank-idle-base.gif =====
+
+===== SKIPPED (binary) ./assets/media/character/tank-idle-shield.gif =====
+
+===== SKIPPED (binary) ./assets/media/final/final.gif =====
+
+===== SKIPPED (binary) ./assets/media/icon/icon1.PNG =====
+
+===== SKIPPED (binary) ./assets/media/icon/icon2.PNG =====
+
+===== SKIPPED (binary) ./assets/media/icon/icon3.PNG =====
+
+===== SKIPPED (binary) ./assets/media/icon/icon4.PNG =====
+
+===== SKIPPED (binary) ./assets/media/icon/icon5.PNG =====
+
+===== SKIPPED (binary) ./assets/media/icon/icon6.PNG =====
+
+===== SKIPPED (binary) ./assets/media/icon/icon7.png =====
+
+===== SKIPPED (binary) ./assets/media/icon/icon8.png =====
+
+===== SKIPPED (binary) ./assets/media/icon/icon9.png =====
+
+===== SKIPPED (binary) ./assets/media/intro/1.png =====
+
+===== SKIPPED (binary) ./assets/media/intro/2-1.png =====
+
+===== SKIPPED (binary) ./assets/media/intro/2-2.png =====
+
+===== SKIPPED (binary) ./assets/media/intro/3.png =====
+
+===== SKIPPED (binary) ./assets/media/intro/4.png =====
+
+===== SKIPPED (binary) ./assets/media/intro/5-1.png =====
+
+===== SKIPPED (binary) ./assets/media/intro/5-2.png =====
+
+===== SKIPPED (binary) ./assets/media/monster/Ambush-monster-attack.gif =====
+
+===== SKIPPED (binary) ./assets/media/monster/Ambush-monster-idle.gif =====
+
+===== SKIPPED (binary) ./assets/media/monster/Danmaku-monster.gif =====
+
+===== SKIPPED (binary) ./assets/media/monster/Follow-monster.gif =====
+
+===== SKIPPED (binary) ./assets/media/monster/Invisible-monster.gif =====
+
+===== SKIPPED (binary) ./assets/media/monster/normal-monster.gif =====
+
+===== SKIPPED (binary) ./assets/media/start.png =====
+
+===== SKIPPED (binary) ./assets/media/time/time.gif =====
+
+===== SKIPPED (binary) ./assets/media/titled-3.png =====
+
+===== SKIPPED (binary) ./assets/music/StarHuntThemeSong.mp3 =====
+
+===== SKIPPED (binary) ./assets/music/Victory.wav =====
+
+===== ./css/style.css =====
+@font-face {
+    font-family: 'Minecraft';
+    src: url('../assets/font/Minecraft.ttf') format('truetype');
+}
+
+/* Define Minecraft font for use */
+* {
+    font-family: 'Minecraft', Arial, sans-serif !important;
+}
+
+/* Reset body layout and set default font */
+body {
+    margin: 0;
+    overflow: hidden;
+    font-family: 'Minecraft', Arial, sans-serif;
+}
+
+/* Make canvas display as block to fill its container */
+canvas {
+    display: block;
+}
+
+/* Intro screen title image styling */
+#introScreen #titleImage {
+    position: absolute;
+    top: 10%;
+    left: 50%;
+    transform: translateX(-50%) scale(1.25);
+    max-width: 400px;
+    mix-blend-mode: lighten;
+    animation: glow 2s ease-in-out infinite alternate;
+}
+
+/* Glow effect keyframes for intro title */
+@keyframes glow {
+    from {
+        filter: drop-shadow(0 0 5px rgba(255,255,255,0.6));
+    }
+    to {
+        filter: drop-shadow(0 0 20px rgba(255,255,255,0.9));
+    }
+}
+
+/* Continue text positioning and pulsing animation */
+#introScreen #continueText {
+    position: absolute;
+    bottom: 10%;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 28px;
+    font-weight: normal;
+    color: white;
+    text-shadow: 2px 2px 5px rgba(0,0,0,0.7);
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+/* Define pulsing keyframes for continue text */
+@keyframes pulse {
+    0%, 100% {
+        transform: translateX(-50%) scale(1);
+    }
+    50% {
+        transform: translateX(-50%) scale(1.2);
+    }
+}
+
+/* Common menu container styling */
+.menuContainer {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 300px;
+    background: rgba(0,0,0,0.8);
+    color: white;
+    text-align: center;
+    font-size: 24px;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+/* Menu button base style */
+.menuButton {
+    width: 100%;
+    margin: 10px 0;
+    padding: 12px 0;
+    background: rgba(255,255,255,0.1);
+    border: 2px solid #fff;
+    border-radius: 4px;
+    font-size: 20px;
+    color: white;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.1s;
+}
+
+/* Button hover effect */
+.menuButton:hover {
+    background: rgba(255,255,255,0.2);
+    transform: scale(1.02);
+}
+
+/* Load/save list styling */
+.menuList {
+    list-style: none;
+    padding: 0;
+    margin: 10px 0;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+/* List item hover underline effect */
+.menuList li {
+    margin: 5px 0;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.menuList li:hover {
+    text-decoration: underline;
+}
+
+/* Load container full-width scrollable */
+.loadContainer {
+    position: absolute;
+    top: 5%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-height: 90vh;
+    background: rgba(0, 0, 0, 0.8);
+    padding: 20px;
+    border-radius: 8px;
+    overflow-y: auto;
+}
+
+/* Wrapper for scrollable table */
+.tableContainer {
+    width: 100%;
+    overflow-y: auto;
+}
+
+/* Table styling for load game list */
+.loadTable {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.loadTable th,
+.loadTable td {
+    border: 1px solid #fff;
+    padding: 8px;
+    text-align: center;
+    color: #fff;
+}
+
+.loadTable th {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Pause menu container styling (reuses menuContainer) */
+.pauseContainer {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 300px;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    text-align: center;
+    font-size: 24px;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+/* Pause menu title styling */
+.pauseContainer h1 {
+    margin: 0 0 16px;
+    font-size: 28px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Pause menu buttons reuse .menuButton styles */
+
+===== ./export_all.sh =====
+output="all.txt"
+
+> "$output"
+
+find . \
+  \( \
+    -path '*/node_modules/*' \
+    -o -name "$(basename "$output")" \
+    -o -name "GameFile.js" \
+  \) -prune \
+  -o -type f -print | sort | while IFS= read -r file; do
+
+  if file "$file" | grep -qE 'text|empty'; then
+    printf "===== %s =====\n" "$file" >> "$output"
+    cat "$file" >> "$output"
+    printf "\n\n" >> "$output"
+  else
+    printf "===== SKIPPED (binary) %s =====\n\n" "$file" >> "$output"
+  fi
+done
+
+echo "✅ Success $output"
+
+===== ./game.html =====
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My P5 Game</title>
+  <style>
+    html,body{margin:0;padding:0;width:100vw;height:100vh;overflow:hidden;background:#000}
+    #bgFrame{position:absolute;top:0;left:0;width:100vw;height:100vh;border:none;z-index:0;pointer-events:none}
+    canvas{position:absolute!important;top:0!important;left:0!important;z-index:1!important;background:transparent!important}
+    #pauseFrame{display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:10000;border:none}
+  </style>
+  <script>
+    const MAIN_URL='index.html?directMain=1'
+    function goToMainMenu(){window.location.href=MAIN_URL}
+    const params=new URLSearchParams(window.location.search)
+    const saveId=params.get('saveId')
+    if(!saveId){console.error('Missing saveId in URL');alert('存档 ID 缺失，无法继续')}
+    window.APP_SAVE_ID=saveId
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/addons/p5.sound.min.js"></script>
+  <script type="module" src="GameFile.js"></script>
+</head>
+<body>
+  <iframe id="pauseFrame" src="pause.html"></iframe>
+  <iframe id="bgFrame" src="BG.html"></iframe>
+  <script>
+    const bg=document.getElementById('bgFrame')
+    const pauseFrame=document.getElementById('pauseFrame')
+    window.addEventListener('keydown',e=>{
+      if(e.key==='Escape'){
+        pauseFrame.style.display='block'
+        noLoop()
+        e.preventDefault()
+      } else {
+        bg.contentWindow.postMessage({type:'keydown',key:e.key},'*')
+      }
+    },true)
+    window.addEventListener('keyup',e=>{
+      if(e.key!=='Escape'){
+        bg.contentWindow.postMessage({type:'keyup',key:e.key},'*')
+      }
+    })
+    window.addEventListener('message',e=>{
+      if(e.data?.type==='pause_menu'){
+        pauseFrame.style.display='block'
+        return
+      }
+      if(e.data?.type==='pause_action'){
+        pauseFrame.style.display='none'
+        const action=e.data.action
+        if(action==='resume'){
+          loop()
+          window.focus()
+        } else if(action==='save'){
+          // your save logic here
+        } else if(action==='quit'){
+          goToMainMenu()
+        }
+      }
+    })
+  </script>
+</body>
+</html>
+
+===== ./index.html =====
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pixelated Space Demo</title>
+  <link rel="stylesheet" href="css/style.css"/>
+  <style>
+    html, body {
+      margin: 0; padding: 0;
+      background: #000;
+      overflow: hidden;
+      width: 100%; height: 100%;
+      font-family: 'Minecraft', Arial, sans-serif;
+    }
+    #introOverlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      opacity: 1;
+      transition: opacity 0.8s ease;
+    }
+    #introOverlay.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+    #introImageWrap {
+      width: 100%; height: 100%;
+      overflow: hidden;
+    }
+    #introImage {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      cursor: pointer;
+      opacity: 1;
+      transition: opacity 0.6s ease;
+      animation: zoomAndPan 20s ease-in-out infinite;
+      transform-origin: top left;
+    }
+    #introImage.fade {
+      opacity: 0;
+    }
+    #subtitleContainer {
+      position: absolute;
+      bottom: 15%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80%;
+      color: #fff;
+      text-align: center;
+      pointer-events: none;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+    }
+    #storyText {
+      font-size: 1.5em;
+      line-height: 1.4;
+      margin-bottom: 1em;
+      max-height: 40vh;
+      overflow: hidden;
+    }
+    #clickText {
+      font-size: 1.2em;
+      opacity: 0.8;
+      margin-top: 2em;
+    }
+    #skipButton {
+      position: absolute;
+      bottom: 5%;
+      right: 5%;
+      color: #fff;
+      font-size: 1.2em;
+      cursor: pointer;
+      user-select: none;
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+    }
+    @keyframes zoomAndPan {
+      0%   { transform: scale(1.20) translate(0%, 0%); }
+      25%  { transform: scale(1.225) translate(-2.5%, -2.5%); }
+      50%  { transform: scale(1.25) translate(-5%, -5%); }
+      75%  { transform: scale(1.225) translate(-2.5%, -2.5%); }
+      100% { transform: scale(1.20) translate(0%, 0%); }
+    }
+  </style>
+</head>
+<body>
+  <div id="introOverlay">
+    <div id="introImageWrap">
+      <img id="introImage" src="assets/media/intro/1.png" alt="Intro"/>
+    </div>
+    <div id="subtitleContainer">
+      <div id="storyText"></div>
+      <div id="clickText">Click to continue</div>
+    </div>
+    <div id="skipButton">Skip &gt;&gt;</div>
+  </div>
+  <div id="pauseOverlay" style="display:none">
+    <button id="resumeBtn">Resume</button>
+    <button onclick="goToMainMenu()">Main Menu</button>
+  </div>
+  <div id="canvas-container"></div>
+  <audio id="bgm" src="assets/music/StarHuntThemeSong.mp3" loop></audio>
+  <script type="module" src="js/app.js"></script>
+  <script src="js/intro.js"></script>
+  <script type="module" src="js/privacy.js"></script>
+  <script>
+    window.addEventListener('introFinished', function(){
+      const audio = document.getElementById('bgm');
+      audio.volume = 0;
+      audio.play();
+      const duration = 5000;
+      const steps = 50;
+      const interval = duration / steps;
+      let step = 0;
+      const fade = setInterval(function(){
+        step++;
+        audio.volume = step / steps;
+        if(step >= steps) clearInterval(fade);
+      }, interval);
+    });
+  </script>
+</body>
+</html>
+
+===== ./js/app.js =====
+// js/app.js
+import { initRouter } from './router.js';
+import { initBackground } from './background.js';
+import { showPrivacyConsent } from './privacy.js';
+
+function startApp() {
+  initBackground(document.getElementById('canvas-container'));
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  startApp();
+  window.addEventListener('introFinished', () => {
+    showPrivacyConsent(agreed => {
+      if (agreed) {
+        initRouter();
+      } else {
+        window.close();
+      }
+    });
+  }, { once: true });
+});
+
+===== ./js/background.js =====
+// js/background.js
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.module.js';
+
+let scene, camera, renderer, starGroup;
+const angularSpeed = 0.0005;
+const moveDuration = 1;
+const moveDistance = 375;
+let moving = false, moveStart = 0, origCamZ = 0;
+let oscillationPhase = 0, maxAngle = THREE.MathUtils.degToRad(15);
+
+export function initBackground(container) {
+  scene    = new THREE.Scene();
+  camera   = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+  camera.position.set(0, 0, 5);
+  camera.lookAt(0, 0, 0);
+
+  renderer = new THREE.WebGLRenderer({ antialias: false });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  container.appendChild(renderer.domElement);
+
+  starGroup = new THREE.Group();
+  for (let i = 0; i < 1500; i++) {
+    const geo = new THREE.SphereGeometry(1, 12, 12);
+    const mat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+    const star = new THREE.Mesh(geo, mat);
+    star.position.set(
+      Math.random() * 600 - 300,
+      Math.random() * 600 - 300,
+      Math.random() * -1200 - 50
+    );
+    starGroup.add(star);
+  }
+  scene.add(starGroup);
+
+  window.addEventListener('resize', onWindowResize);
+  window.addEventListener('mousemove', onMouseMove);
+  animate();
+}
+
+export function startFlight() {
+  if (!moving) {
+    moving = true;
+    moveStart = performance.now();
+    origCamZ = camera.position.z;
+  }
+}
+
+function animate() {
+  requestAnimationFrame(animate);
+
+  // 星云环形振荡
+  oscillationPhase += angularSpeed;
+  starGroup.rotation.y = (Math.sin(oscillationPhase) + 1)/2 * maxAngle;
+
+  if (moving) {
+    const elapsed = (performance.now() - moveStart) / 1000;
+    if (elapsed <= moveDuration) {
+      const t = elapsed / moveDuration;
+      const delta = easeInOutQuad(t) * moveDistance;
+      camera.position.z = origCamZ - delta;
+    } else {
+      camera.position.z = origCamZ - moveDistance;
+      moving = false;
+      window.dispatchEvent(new Event('flightComplete'));
+    }
+  }
+
+  renderer.render(scene, camera);
+}
+
+function onWindowResize() {
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  camera.aspect = window.innerWidth/window.innerHeight;
+  camera.updateProjectionMatrix();
+}
+
+function onMouseMove(e) {
+  const x = (e.clientX - innerWidth/2) / innerWidth;
+  const y = (e.clientY - innerHeight/2) / innerHeight;
+  const range = 20;
+  const img = document.getElementById('titleImage');
+  const txt = document.getElementById('continueText');
+  if (img) img.style.transform =
+    `translateX(calc(-50% + ${-x*range}px)) translateY(${-y*range}px) scale(1.25)`;
+  if (txt) txt.style.transform =
+    `translateX(calc(-50% + ${ x*range*1.5 }px)) translateY(${ y*range*1.5 }px)`;
+}
+
+function easeInOutQuad(t) {
+  return t < 0.5
+    ? 2*t*t
+    : -1 + (4 - 2*t)*t;
+}
+
+===== ./js/intro.js =====
+document.addEventListener('DOMContentLoaded', () => {
+  const images = [
+    'assets/media/intro/1.png',
+    'assets/media/intro/2-1.png',
+    'assets/media/intro/2-2.png',
+    'assets/media/intro/3.png',
+    'assets/media/intro/4.png',
+    'assets/media/intro/5-1.png',
+    'assets/media/intro/5-2.png'
+  ];
+  const subtitles = [
+    `At the edge of the universe lies a forbidden realm—the
+Graveyard of the Cosmos.
+It is the tomb of civilizations, a nest of the unknown. For
+decades, countless explorers, fleets, machines, and even
+signals have vanished without a trace after entering.`,
+    `In desperation, the Unified Government launched the "Hunter
+Project": transforming humans into cybernetic warriors,
+merging flesh and machine into combat units designed to
+confront the bio-threats lurking within this deadly domain.`,
+    `In desperation, the Unified Government launched the "Hunter
+Project": transforming humans into cybernetic warriors,
+merging flesh and machine into combat units designed to
+confront the bio-threats lurking within this deadly domain.`,
+    `You are the 233rd-generation Hunter—equipped with
+enhanced senses, a reconfigurable body, and a memory that
+has been tampered with.`,
+    `But in the final moment before you descend into sleep, you
+vaguely hear a voice:
+“This is a retrieval mission, not an exploration.”`,
+    `When you awaken, only a single directive remains before you:
+Hunt—until nothing is left.`,
+    ''
+  ];
+  let idx       = 0;
+  const overlay = document.getElementById('introOverlay');
+  const imgEl   = document.getElementById('introImage');
+  const storyEl = document.getElementById('storyText');
+  const clickEl = document.getElementById('clickText');
+  const skipBtn = document.getElementById('skipButton');
+  let typingTimer = null;
+  let charIndex   = 0;
+  function startTyping(text) {
+    clearInterval(typingTimer);
+    storyEl.textContent = '';
+    charIndex = 0;
+    typingTimer = setInterval(() => {
+      if (charIndex < text.length) {
+        storyEl.textContent += text[charIndex++];
+      } else {
+        clearInterval(typingTimer);
+      }
+    }, 30);
+  }
+  function showSubtitleForSlide(i) {
+    const text = subtitles[i] || '';
+    clearInterval(typingTimer);
+    storyEl.textContent = '';
+    if (text) {
+      storyEl.style.opacity = '1';
+      startTyping(text);
+    } else {
+      storyEl.style.opacity = '0';
+    }
+  }
+  let dotCount = 0;
+  const ellipsisTimer = setInterval(() => {
+    dotCount = (dotCount + 1) % 4;
+    clickEl.textContent = 'Click to continue' + '.'.repeat(dotCount);
+  }, 600);
+  function endIntro() {
+    clearInterval(ellipsisTimer);
+    overlay.classList.add('hidden');
+    overlay.addEventListener('transitionend', () => {
+      overlay.remove();
+      window.dispatchEvent(new Event('introFinished'));
+    }, { once: true });
+  }
+  imgEl.addEventListener('click', () => {
+    if (idx < images.length - 1) {
+      idx++;
+      imgEl.classList.add('fade');
+      imgEl.addEventListener('transitionend', function handler() {
+        imgEl.removeEventListener('transitionend', handler);
+        imgEl.src = images[idx];
+        imgEl.classList.remove('fade');
+        showSubtitleForSlide(idx);
+      });
+    } else {
+      endIntro();
+    }
+  });
+  skipBtn.addEventListener('click', endIntro);
+  showSubtitleForSlide(0);
+});
+
+===== ./js/privacy.js =====
+// js/privacy.js
+export function showPrivacyConsent(callback) {
+  // create a full-screen overlay for privacy consent
+  const overlay = document.createElement('div');
+  overlay.id = 'privacyOverlay';
+  Object.assign(overlay.style, {
+    position:   'fixed',
+    top:        '0',
+    left:       '0',
+    width:      '100vw',
+    height:     '100vh',
+    background: 'rgba(0,0,0,0.85)',
+    color:      '#fff',
+    display:    'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding:    '2em',
+    zIndex:     '10000',
+    textAlign:  'center',
+    fontSize:   '1em',
+    fontFamily: 'Minecraft, Arial, sans-serif'
+  });
+
+  // set the HTML content with message and action buttons
+  overlay.innerHTML = `
+    <h2>Privacy & Cookies</h2>
+    <p>
+      We use cookies and process data to provide and improve our services, 
+      in accordance with EU privacy regulations (GDPR).
+      By clicking “I Agree”, you consent to our use of cookies and data processing.
+    </p>
+    <div style="margin-top:1.5em;">
+      <button id="agreeBtn" style="
+        padding:0.75em 1.5em; margin-right:1em;
+        font-size:1em; cursor:pointer;
+        border:none; border-radius:4px;
+        background:#28a745; color:#fff;
+      ">I Agree & Continue</button>
+      <button id="declineBtn" style="
+        padding:0.75em 1.5em;
+        font-size:1em; cursor:pointer;
+        border:none; border-radius:4px;
+        background:#dc3545; color:#fff;
+      ">I Do Not Agree & Exit</button>
+    </div>
+  `;
+
+  document.body.appendChild(overlay);
+
+  // when user agrees, remove overlay and call callback with true
+  document.getElementById('agreeBtn').onclick = () => {
+    overlay.remove();
+    callback(true);
+  };
+
+  // when user declines, call callback with false
+  document.getElementById('declineBtn').onclick = () => {
+    callback(false);
+  };
+}
+
+===== ./js/router.js =====
+import { startFlight } from './background.js'
+import { IntroScreen } from './ui/introScreen.js'
+import { MainMenu } from './ui/mainMenu.js'
+import { LoadMenu } from './ui/loadMenu.js'
+import { SaveMenu } from './ui/saveMenu.js'
+import { ExitConfirm } from './ui/exitConfirm.js'
+
+const modules = {
+  INTRO: IntroScreen,
+  MAIN_MENU: MainMenu,
+  LOAD_MENU: LoadMenu,
+  SAVE_MENU: SaveMenu,
+  EXIT_CONFIRM: ExitConfirm
+}
+
+let currentState = null
+
+export function initRouter () {
+  const params = new URLSearchParams(window.location.search)
+  if (params.get('directMain')) {
+    switchTo('MAIN_MENU')
+  } else {
+    switchTo('INTRO')
+  }
+}
+
+export function switchTo (state) {
+  if (currentState) modules[currentState].hide()
+  currentState = state
+  modules[state].show()
+}
+
+export function advanceTo (state) {
+  const handler = () => {
+    window.removeEventListener('flightComplete', handler)
+    switchTo(state)
+  }
+  window.addEventListener('flightComplete', handler)
+  startFlight()
+}
+
+===== ./js/shop.js =====
+/* docs/js/shop.js */
+/* eslint-env browser, es2021 */
+import { supabase } from './supabase.js';
+
+/* ---------- Constants ---------- */
+const ITEMS = [
+  ['Phantom Dash', 'Ghost Cutter',    'Runner’s Instinct'],
+  ['Iron Reversal','Anchor Field',    'Guardian’s Will'  ],
+  ['Crimson Drain','Wrath Unchained', 'Berserker’s Blood']
+];
+const ENTRY_SET = new Set(['Phantom Dash','Iron Reversal','Crimson Drain']);
+const DESC = {
+  'Phantom Dash'      : 'Dash forward dealing damage along the path.',
+  'Ghost Cutter'      : 'Temporarily boosts attack power.',
+  'Runner’s Instinct' : 'Passive: kill refreshes Phantom Dash cooldown.',
+  'Iron Reversal'     : 'Creates a reflecting shield.',
+  'Anchor Field'      : 'Slows enemies in an area.',
+  'Guardian’s Will'   : 'Passive: damage in Anchor Field buffs next shield.',
+  'Crimson Drain'     : 'Attacks restore some HP.',
+  'Wrath Unchained'   : 'Charge-up 360° heavy strike.',
+  'Berserker’s Blood' : 'Passive: low HP greatly increases attack.'
+};
+
+/* ---------- Helpers ---------- */
+const findPos = name => {
+  for (let c = 0; c < 3; c++) {
+    const r = ITEMS[c].indexOf(name);
+    if (r !== -1) return { col: c, row: r };
+  }
+  return null;
+};
+
+/* ---------- DOM ---------- */
+const $shop   = document.getElementById('shop');
+const $stored = document.getElementById('storedList');
+const $lvl    = document.getElementById('levelDisplay');
+const $reset  = document.getElementById('resetBtn');
+const $undo   = document.getElementById('undoBtn');
+const $back   = document.getElementById('backToGame');
+const $tip    = document.getElementById('tooltip');
+
+const params  = new URLSearchParams(location.search);
+const saveId  = params.get('saveId');
+if (!saveId) { alert('saveId missing'); throw new Error('saveId'); }
+
+/* ---------- State ---------- */
+let level   = 1;
+let stored  = [];
+let homeCol = null;
+let history = [];          // for Undo snapshots
+
+/* ---------- UI ---------- */
+function renderStored () {
+  $stored.innerHTML = stored.length
+    ? stored.map(n => `<li>${n}</li>`).join('')
+    : '<li>None</li>';
+}
+
+function updateUI () {
+  $lvl.textContent = `Level: ${level}`;
+
+  document.querySelectorAll('.column').forEach($c => {
+    const col = +$c.dataset.col;
+
+    /* column glow */
+    $c.classList.remove('active', 'green', 'yellow', 'red');
+    if (col === homeCol) {
+      $c.classList.add('active', ['green', 'yellow', 'red'][col]);
+    }
+
+    /* cells */
+    $c.querySelectorAll('.item').forEach($it => {
+      const row  = +$it.dataset.row;
+      const name = $it.querySelector('.name').textContent;
+
+      let disabled = true;
+      if (level === 1) {
+        disabled = !ENTRY_SET.has(name) || stored.length >= 1;
+      } else if (level === 2) {
+        if (stored.length === 1) {
+          if (col === homeCol && row === 1) disabled = false;
+          if (col !== homeCol && (row === 0 || row === 1)) disabled = false;
+        } else if (stored.length === 2) {
+          const used = new Set(stored.map(n => findPos(n).col));
+          if (!used.has(col) && (row === 0 || row === 1)) disabled = false;
+        }
+      }
+      if (stored.includes(name) || row === 2) disabled = true;
+
+      $it.classList.toggle('disabled',  disabled);
+      $it.classList.toggle('selected',  stored.includes(name));
+    });
+  });
+
+  $undo.disabled = history.length === 0;
+  renderStored();
+}
+
+/* ---------- Supabase ---------- */
+async function loadSave () {
+  const { data, error } = await supabase
+    .from('saves')
+    .select('current_level,skills')
+    .eq('id', saveId)
+    .single();
+
+  if (error) { console.error(error); return; }
+
+  level  = data.current_level || 1;
+  stored = data.skills        || [];
+
+  if (stored.length) {
+    const p = findPos(stored[0]);
+    homeCol = p ? p.col : null;
+  }
+  updateUI();
+}
+
+function save () {
+  return supabase
+    .from('saves')
+    .update({ current_level: level, skills: stored })
+    .eq('id', saveId);
+}
+
+/* ---------- Tooltip ---------- */
+$shop.addEventListener('pointerover', e => {
+  const $it = e.target.closest('.item');
+  if (!$it) return;
+  const name = $it.querySelector('.name').textContent;
+  $tip.textContent = DESC[name] || name;
+  $tip.style.opacity = '1';
+});
+$shop.addEventListener('pointermove', e => {
+  $tip.style.left = `${e.clientX + 12}px`;
+  $tip.style.top  = `${e.clientY + 12}px`;
+});
+$shop.addEventListener('pointerout', () => { $tip.style.opacity = '0'; });
+
+/* ---------- Click Logic ---------- */
+$shop.addEventListener('click', async e => {
+  const $it = e.target.closest('.item');
+  if (!$it || $it.classList.contains('disabled')) return;
+
+  const col  = +$it.parentElement.dataset.col;
+  const row  = +$it.dataset.row;
+  const name = $it.querySelector('.name').textContent;
+
+  /* snapshot for undo */
+  history.push({ level, stored: [...stored], homeCol });
+
+  if (level === 1) {
+    stored.push(name);
+    homeCol = col;
+  } else if (level === 2) {
+    if (stored.length === 1) {
+      if (col === homeCol && row === 1) {
+        stored.push(name);
+        stored.push(ITEMS[col][2]);                 // auto-unlock passive
+      } else if (col !== homeCol && (row === 0 || row === 1)) {
+        stored.push(name);
+      }
+    } else if (stored.length === 2) {
+      const used = new Set(stored.map(n => findPos(n).col));
+      if (!used.has(col) && (row === 0 || row === 1)) {
+        stored.push(name);
+      }
+    }
+  }
+
+  await save();
+  updateUI();
+});
+
+/* ---------- Undo ---------- */
+$undo.addEventListener('click', async () => {
+  if (!history.length) return;
+  const prev = history.pop();
+  level   = prev.level;
+  stored  = prev.stored;
+  homeCol = prev.homeCol;
+  await save();
+  updateUI();
+});
+
+/* ---------- Reset ---------- */
+$reset.addEventListener('click', async () => {
+  history.push({ level, stored: [...stored], homeCol });
+  level = 1;
+  stored = [];
+  homeCol = null;
+  await save();
+  updateUI();
+});
+
+/* ---------- Continue ---------- */
+$back.addEventListener('click', async () => {
+  if (level === 1 && stored.length === 1)       level = 2;
+  else if (level === 2 && stored.length >= 2)   level = 3;
+  else if (level === 3)                         level = 4;
+  else if (level === 4)                         level = 5;
+
+  document
+    .getElementById('bgFrame')
+    .contentWindow
+    .postMessage({ type: 'level', level }, '*');
+
+  await save();
+  location.href = `game.html?saveId=${saveId}`;
+});
+
+/* ---------- Init ---------- */
+loadSave();
+
+===== ./js/supabase.js =====
+// js/supabase.js
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+// set Supabase project URL
+const SUPABASE_URL = 'https://zogcqsdolkkjwnimnbaw.supabase.co';
+// set anonymous public key
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpvZ2Nxc2RvbGtranduaW1uYmF3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYxOTkwMDAsImV4cCI6MjA2MTc3NTAwMH0.OrDcGnhJWUrKGs6oDfJ0Kb9cmxBDggYtmVleAAlnGTo';
+
+// create Supabase client using URL and anon key
+export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON);
+
+===== ./js/ui/escMenu.js =====
+import { switchTo } from '../router.js'
+
+const MAIN_URL = 'index.html?directMain=1'
+function goToMainMenu () { window.location.href = MAIN_URL }
+
+export const EscMenu = {
+  el: null,
+  show ({ onResume } = {}) {
+    this.el = document.createElement('div')
+    this.el.className = 'menuContainer'
+    this.el.innerHTML = `
+      <h2>Paused</h2>
+      <button class="menuButton" id="resumeBtn">Resume</button>
+      <button class="menuButton" id="saveBtn">Save</button>
+      <button class="menuButton" id="loadBtn">Load</button>
+      <button class="menuButton" id="exitBtn">Exit</button>
+    `
+    document.body.appendChild(this.el)
+    document.getElementById('resumeBtn').onclick = () => {
+      this.hide()
+      onResume?.()
+    }
+    document.getElementById('saveBtn').onclick = () => {
+      this.hide()
+      switchTo('SAVE_MENU')
+    }
+    document.getElementById('loadBtn').onclick = () => {
+      this.hide()
+      switchTo('LOAD_MENU')
+    }
+    document.getElementById('exitBtn').onclick = () => goToMainMenu()
+  },
+  hide () { this.el?.remove() }
+}
+
+===== ./js/ui/exitConfirm.js =====
+import { switchTo } from '../router.js'
+
+const MAIN_URL = 'index.html?directMain=1'
+function goToMainMenu () { window.location.href = MAIN_URL }
+
+export const ExitConfirm = {
+  el: null,
+  show () {
+    this.el = document.createElement('div')
+    this.el.className = 'menuContainer'
+    this.el.innerHTML = `
+      <h2>Exit to Main Menu?</h2>
+      <button class="menuButton" id="yesExit">Yes</button>
+      <button class="menuButton" id="noExit">No</button>
+    `
+    document.body.appendChild(this.el)
+    document.getElementById('yesExit').onclick = () => goToMainMenu()
+    document.getElementById('noExit').onclick = () => switchTo('MAIN_MENU')
+  },
+  hide () { this.el?.remove() }
+}
+
+===== ./js/ui/introScreen.js =====
+// js/ui/introScreen.js
+import { advanceTo } from '../router.js';
+
+export const IntroScreen = {
+  el: null,
+
+  show () {
+    /* build screen */
+    this.el = document.createElement('div');
+    this.el.id = 'introScreen';
+    this.el.innerHTML = `
+      <img id="titleImage" src="assets/media/titled-3.png" alt="Title Image" />
+      <div id="continueText">Press any key or click to continue</div>
+    `;
+    document.body.appendChild(this.el);
+
+    /* REMOVE glow specifically for this image */
+    const img = this.el.querySelector('#titleImage');
+    if (img) {
+      img.style.filter     = 'none';
+      img.style.boxShadow  = 'none';
+    }
+
+    /* input listeners */
+    window.addEventListener('keydown', this._onInput);
+    window.addEventListener('mousedown', this._onInput);
+  },
+
+  hide () {
+    window.removeEventListener('keydown', this._onInput);
+    window.removeEventListener('mousedown', this._onInput);
+    this.el.remove();
+  },
+
+  /* proceed after intro overlay is gone */
+  _onInput () {
+    if (document.getElementById('introOverlay')) return;
+    advanceTo('MAIN_MENU');
+  }
+};
+
+===== ./js/ui/loadMenu.js =====
+// js/ui/loadMenu.js
+import { supabase } from '../supabase.js';
+import { switchTo } from '../router.js';
+
+export const LoadMenu = {
+  el: null,
+  show: async function() {
+    // create div for load container
+    this.el = document.createElement('div');
+    this.el.className = 'loadContainer';
+
+    // get save records from supabase including skills and cumulative score
+    let { data: saves, error } = await supabase
+      .from('saves')
+      .select(`
+        id,
+        name,
+        current_level,
+        mode,
+        creation_time,
+        skills,
+        cumulative_score
+      `)
+      .order('creation_time', { ascending: false });
+    if (error) {
+      alert('Load failed: ' + error.message);
+      saves = [];
+    }
+
+    // build table rows for each save
+    const rows = saves.length
+      ? saves.map(s => {
+          const created = new Date(s.creation_time).toLocaleString();
+          const skillsStr = (s.skills || []).join(', ');
+          const cumScore = s.cumulative_score ?? 0;
+          return `
+            <tr data-id="${s.id}">
+              <td>${created}</td>
+              <td>${s.name}</td>
+              <td>${s.current_level}</td>
+              <td>${s.mode}</td>
+              <td>${skillsStr}</td>
+              <td>${cumScore}</td>
+              <td>
+                <button class="menuButton deleteBtn" data-id="${s.id}">
+                  Delete
+                </button>
+              </td>
+            </tr>
+          `;
+        }).join('')
+      : `<tr><td colspan="7">(no saves found)</td></tr>`;
+
+    // set html to show table and back button
+    this.el.innerHTML = `
+      <h2>Load Game</h2>
+      <div class="tableContainer">
+        <table class="loadTable">
+          <thead>
+            <tr>
+              <th>Created</th>
+              <th>Name</th>
+              <th>Level</th>
+              <th>Mode</th>
+              <th>Skills</th>
+              <th>Total Score</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+      <button class="menuButton" id="backFromLoad">Back</button>
+    `;
+    document.body.appendChild(this.el);
+
+    // attach click on each row to load that save
+    this.el.querySelectorAll('tbody tr[data-id]').forEach(tr => {
+      tr.addEventListener('click', () => {
+        const id = tr.getAttribute('data-id');
+        window.location.href = `game.html?saveId=${id}`;
+      });
+    });
+
+    // attach delete logic to delete button
+    this.el.querySelectorAll('.deleteBtn').forEach(btn => {
+      btn.addEventListener('click', async e => {
+        e.stopPropagation();
+        if (!confirm('Delete this save?')) return;
+        const id = btn.getAttribute('data-id');
+        const { error } = await supabase
+          .from('saves')
+          .delete()
+          .eq('id', id);
+        if (error) {
+          alert('Delete failed: ' + error.message);
+        } else {
+          this.hide();
+          this.show();
+        }
+      });
+    });
+
+    // back button goes main menu
+    document.getElementById('backFromLoad').onclick = () => switchTo('MAIN_MENU');
+  },
+  hide() {
+    // remove element if exists
+    if (this.el) this.el.remove();
+  }
+};
+
+===== ./js/ui/mainMenu.js =====
+// js/ui/mainMenu.js
+import { advanceTo } from '../router.js';
+
+export const MainMenu = {
+  el: null,
+  show() {
+    this.el = document.createElement('div');
+    this.el.className = 'menuContainer';
+    this.el.innerHTML = `
+      <button class="menuButton" id="newBtn">Start New Game</button>
+      <button class="menuButton" id="loadBtn">Load Game</button>
+      <button class="menuButton" id="exitBtn">Exit Game</button>
+    `;
+    document.body.appendChild(this.el);
+    document.getElementById('newBtn').onclick  = () => advanceTo('SAVE_MENU');
+    document.getElementById('loadBtn').onclick = () => advanceTo('LOAD_MENU');
+    document.getElementById('exitBtn').onclick = () => advanceTo('EXIT_CONFIRM');
+  },
+  hide() {
+    this.el.remove();
+  }
+};
+
+===== ./js/ui/saveMenu.js =====
+// js/ui/saveMenu.js
+import { supabase } from '../supabase.js';
+import { switchTo } from '../router.js';
+
+export const SaveMenu = {
+  el: null,
+  show() {
+    // create container for save menu
+    this.el = document.createElement('div');
+    this.el.className = 'menuContainer';
+    this.el.innerHTML = `
+      <h2>Create New Save</h2>
+      <div class="optionsArea">
+        <p>Save Name:</p>
+        <input
+          type="text"
+          id="saveNameInput"
+          placeholder="Enter save name"
+          style="width: 100%; font-size: 1.2em; padding: 0.5em;"
+        />
+      </div>
+      <div class="optionsArea">
+        <p>Mode:</p>
+        <label><input type="radio" name="mode" value="easy" checked> Easy</label>
+        <label><input type="radio" name="mode" value="hard"> Hard</label>
+      </div>
+      <button class="menuButton" id="confirmSave">Save & Play</button>
+      <button class="menuButton" id="backFromSave">Back</button>
+    `;
+    document.body.appendChild(this.el);
+
+    // insert new save record, initialize skills as empty array
+    document.getElementById('confirmSave').onclick = async () => {
+      const name = document.getElementById('saveNameInput').value.trim();
+      if (!name) {
+        alert('Please enter a save name.');
+        return;
+      }
+      const mode = document.querySelector('input[name="mode"]:checked').value;
+      const { data, error } = await supabase
+        .from('saves')
+        .insert([{ name, current_level: 1, mode, skills: [], cumulative_score: 0 }])
+        .select();
+      if (error) {
+        alert('Save failed: ' + error.message);
+        return;
+      }
+      const saveId = data[0].id;
+      // go to game page with new save
+      window.location.href = `game.html?saveId=${saveId}`;
+    };
+
+    // back button returns to main menu
+    document.getElementById('backFromSave').onclick = () => switchTo('MAIN_MENU');
+  },
+
+  hide() {
+    // remove save menu element if it exists
+    if (this.el) this.el.remove();
+  }
+};
+
+===== ./js/ui/summeryMenu.js =====
+// js/ui/summaryMenu.js
+import { supabase } from '../supabase.js';
+import { switchTo } from '../router.js';
+
+export const SummaryMenu = {
+  el: null,
+  show(totalScore) {
+    // determine grade from total score
+    let grade;
+    if (totalScore >= 2000) grade = 'S';
+    else if (totalScore >= 1500) grade = 'A';
+    else if (totalScore >= 1000) grade = 'B';
+    else grade = 'C';
+
+    // create container element for summary
+    this.el = document.createElement('div');
+    this.el.className = 'summaryContainer';
+    this.el.innerHTML = `
+      <h2>Level Complete!</h2>
+      <div class="summaryContent">
+        <p><strong>Score:</strong> ${totalScore}</p>
+        <p><strong>Grade:</strong> <span class="grade grade-${grade}">${grade}</span></p>
+      </div>
+      <div class="summaryActions">
+        <button id="nextLevelBtn" class="menuButton">Next Level</button>
+        <button id="retryBtn" class="menuButton">Retry</button>
+        <button id="exitBtn" class="menuButton">Exit to Menu</button>
+      </div>
+    `;
+    document.body.appendChild(this.el);
+
+    // go to next level on click
+    document.getElementById('nextLevelBtn').onclick = () => {
+      switchTo('GAME');
+    };
+    // retry same level on click
+    document.getElementById('retryBtn').onclick = () => {
+      switchTo('GAME', { retry: true });
+    };
+    // exit to main menu on click
+    document.getElementById('exitBtn').onclick = () => switchTo('MAIN_MENU');
+  },
+  hide() {
+    // remove summary element if exists
+    if (this.el) this.el.remove();
+  }
+};
+
+// CSS to include in global stylesheet or inline styles:
+/*
+.summaryContainer {
+  position: fixed;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  padding: 2em;
+  border-radius: 8px;
+  text-align: center;
+  z-index: 1000;
+}
+.summaryContent p {
+  font-size: 1.2em;
+  margin: 0.5em 0;
+}
+.grade {
+  display: inline-block;
+  padding: 0.2em 0.6em;
+  border-radius: 4px;
+  font-size: 1.4em;
+}
+.grade-C { background: #888; }
+.grade-B { background: #66c; }
+.grade-A { background: #2c9; }
+.grade-S { background: gold; color: #000; }
+.summaryActions { margin-top: 1.5em; }
+.summaryActions .menuButton { margin: 0 0.5em; }
+*/
+
+===== SKIPPED (binary) ./package-lock.json =====
+
+===== ./pause.html =====
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Pause Menu</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    html,body{margin:0;padding:0;height:100vh;overflow:hidden;background:rgba(0,0,0,.9);display:flex;align-items:center;justify-content:center}
+  </style>
+</head>
+<body>
+  <div class="pauseContainer">
+    <h1>Game Paused</h1>
+    <button class="menuButton" id="resumeBtn">Resume</button>
+    <button class="menuButton" id="saveBtn">Save</button>
+    <button class="menuButton" id="quitBtn">Quit</button>
+  </div>
+
+  <script>
+    const send=a=>parent.postMessage({type:'pause_action',action:a},'*')
+    document.getElementById('resumeBtn').onclick=()=>send('resume')
+    document.getElementById('saveBtn').onclick  =()=>send('save')
+    document.getElementById('quitBtn').onclick  =()=>send('quit')
+    window.addEventListener('keydown',e=>{if(e.key==='Escape')send('resume')})
+  </script>
+</body>
+</html>
+
+===== ./shop.html =====
+<!-- docs/shop.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Shop Page</title>
+
+  <!-- global styles -->
+  <link rel="stylesheet" href="css/style.css"/>
+
+  <style>
+    html,body{
+      margin:0;padding:0;height:100%;overflow:hidden;background:#000;
+      font-family:"Minecraft",Arial,sans-serif;
+    }
+
+    /* animated background frame */
+    #bgFrame{
+      position:absolute;inset:0;border:none;z-index:0;pointer-events:none;
+    }
+
+    /* shop panel */
+    .menuContainer{
+      position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+      background:rgba(0,0,0,.85);color:#fff;padding:24px 28px;border-radius:10px;
+      max-width:90%;text-align:center;z-index:1;
+    }
+
+    /* buttons */
+    .menuButton{
+      background:rgba(255,255,255,.12);border:2px solid #fff;color:#fff;
+      padding:6px 14px;border-radius:4px;cursor:pointer;transition:background .2s;
+    }
+    .menuButton:hover{background:rgba(255,255,255,.25);}
+    .secondary{border-color:#888;color:#888;}
+    .secondary:hover{background:rgba(255,255,255,.08);}
+
+    /* skill grid */
+    #shop{display:flex;gap:12px;margin:18px 0;user-select:none;}
+    .column{
+      flex:1;display:flex;flex-direction:column;gap:8px;
+      background:#222;border:2px solid #555;border-radius:6px;padding:8px;
+    }
+    /* column glow variants */
+    .column.active.green  {box-shadow:0 0 10px 2px rgba(  0,255,  0,.75);}
+    .column.active.yellow {box-shadow:0 0 10px 2px rgba(255,255,  0,.75);}
+    .column.active.red    {box-shadow:0 0 10px 2px rgba(255,  0,  0,.75);}
+
+    .item{
+      position:relative;display:flex;flex-direction:column;align-items:center;
+      gap:4px;padding:10px 6px;background:#333;border:1px solid #666;border-radius:6px;
+      cursor:pointer;transition:transform .12s;
+    }
+    .item:hover:not(.disabled){transform:scale(1.05);}
+    .item.disabled{
+      background:#111;color:#777;cursor:not-allowed;filter:grayscale(1);
+    }
+    /* single-cell glow when selected */
+    .item.selected{box-shadow:0 0 6px 3px rgba(255,255,255,.9);}
+
+    .item img{width:48px;height:48px;object-fit:contain;pointer-events:none;}
+    .name{font-size:.9em;}
+
+    /* stored list */
+    #storedSection{margin-top:16px;}
+    #storedList{list-style:none;padding:0;margin:0;}
+    #storedList li{padding:4px 0;border-bottom:1px solid #444;}
+
+    /* tooltip */
+    #tooltip{
+      position:fixed;max-width:240px;background:rgba(0,0,0,.9);color:#fff;
+      padding:6px 8px;border-radius:4px;font-size:.85em;line-height:1.3;
+      pointer-events:none;z-index:999;opacity:0;transition:opacity .15s;
+    }
+  </style>
+</head>
+<body>
+  <iframe id="bgFrame" src="BG.html?auto=true"></iframe>
+
+  <div class="menuContainer" id="shopPanel">
+    <div id="header" style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
+      <span id="levelDisplay">Level: 0</span>
+      <div style="display:flex;gap:8px;">
+        <button class="menuButton secondary" id="resetBtn">Reset</button>
+        <button class="menuButton" id="undoBtn" disabled>Undo</button>
+      </div>
+    </div>
+
+    <!-- skill grid -->
+    <div id="shop">
+      <!-- Agile column -->
+      <div class="column" data-col="0">
+        <div class="item" data-row="0">
+          <img src="./assets/media/icon/icon8.png" alt="">
+          <span class="name">Phantom Dash</span>
+        </div>
+        <div class="item" data-row="1">
+          <img src="./assets/media/icon/icon5.PNG" alt="">
+          <span class="name">Ghost Cutter</span>
+        </div>
+        <div class="item" data-row="2">
+          <img src="./assets/media/icon/icon4.PNG" alt="">
+          <span class="name">Runner’s Instinct</span>
+        </div>
+      </div>
+
+      <!-- Tank column -->
+      <div class="column" data-col="1">
+        <div class="item" data-row="0">
+          <img src="./assets/media/icon/icon3.PNG" alt="">
+          <span class="name">Iron Reversal</span>
+        </div>
+        <div class="item" data-row="1">
+          <img src="./assets/media/icon/icon1.PNG" alt="">
+          <span class="name">Anchor Field</span>
+        </div>
+        <div class="item" data-row="2">
+          <img src="./assets/media/icon/icon6.PNG" alt="">
+          <span class="name">Guardian’s Will</span>
+        </div>
+      </div>
+
+      <!-- Power column -->
+      <div class="column" data-col="2">
+        <div class="item" data-row="0">
+          <img src="./assets/media/icon/icon7.png" alt="">
+          <span class="name">Crimson Drain</span>
+        </div>
+        <div class="item" data-row="1">
+          <img src="./assets/media/icon/icon2.png" alt="">
+          <span class="name">Wrath Unchained</span>
+        </div>
+        <div class="item" data-row="2">
+          <img src="./assets/media/icon/icon9.png" alt="">
+          <span class="name">Berserker’s Blood</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- stored skills -->
+    <div id="storedSection">
+      <h3>Stored Skills</h3>
+      <ul id="storedList"><li>None</li></ul>
+    </div>
+
+    <button class="menuButton" id="backToGame">Continue</button>
+  </div>
+
+  <div id="tooltip"></div>
+
+  <script type="module" src="js/shop.js"></script>
+</body>
+</html>
+
+===== ./summary.html =====
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mission Summary</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    html,body{
+      margin:0;padding:0;height:100vh;overflow:hidden;background:#000;
+      color:#fff;font-family:'Minecraft',Arial,sans-serif;
+      display:flex;align-items:center;justify-content:center
+    }
+    .summaryContainer{
+      background:rgba(0,0,0,.85);
+      border:2px solid #fff;border-radius:8px;
+      padding:32px 48px;text-align:center;
+      max-width:420px;width:90%;opacity:0;
+      transition:opacity .8s ease
+    }
+    .summaryContainer.show{opacity:1}
+    .summaryContainer h2{margin:0 0 12px;font-size:32px;letter-spacing:1px}
+    .summaryContent p{margin:8px 0;font-size:20px}
+    .grade{display:inline-block;padding:4px 14px;border-radius:4px;font-size:28px}
+    .grade-S{background:gold;color:#000}
+    .grade-A{background:#2c9}
+    .grade-B{background:#66c}
+    .grade-C{background:#888}
+    .summaryActions{margin-top:28px;display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+    .summaryActions .menuButton{
+      padding:10px 18px;border:2px solid #fff;border-radius:4px;
+      background:rgba(255,255,255,.12);color:#fff;font-size:18px;
+      cursor:pointer;transition:background .25s,transform .1s
+    }
+    .summaryActions .menuButton:hover{
+      background:rgba(255,255,255,.25);transform:scale(1.04)
+    }
+    #introMask{
+      position:fixed;inset:0;z-index:9999;
+      background:#000 url('assets/media/final/final.gif') center/contain no-repeat;
+      animation:fadeMask 5s forwards
+    }
+    @keyframes fadeMask{
+      0%,80%{opacity:1}
+      100%{opacity:0;visibility:hidden}
+    }
+  </style>
+</head>
+<body>
+  <div id="introMask"></div>
+  <audio id="victoryBgm" src="assets/music/Victory.wav"></audio>
+  <div id="summary" class="summaryContainer"></div>
+  <script type="module">
+    import { supabase } from './js/supabase.js';
+    const bgm=document.getElementById('victoryBgm');bgm.volume=.2;bgm.play().catch(()=>{});
+    setTimeout(()=>document.getElementById('summary').classList.add('show'),5000);
+    const params=new URLSearchParams(location.search);const saveId=params.get('saveId');
+    if(!saveId){alert('缺少 saveId');history.back()}
+    let totalScore=0;
+    try{
+      const{data,error}=await supabase.from('saves').select('cumulative_score').eq('id',saveId).single();
+      if(error)throw error;totalScore=data.cumulative_score??0
+    }catch(err){console.error(err);alert('读取分数失败：'+err.message)}
+    let grade='C';if(totalScore>=2000)grade='S';else if(totalScore>=1500)grade='A';else if(totalScore>=1000)grade='B';
+    const $summary=document.getElementById('summary');
+    $summary.innerHTML=`
+      <h2>MISSION&nbsp;COMPLETE!</h2>
+      <div class="summaryContent">
+        <p><strong>Score：</strong>${totalScore}</p>
+        <p><strong>Grade：</strong><span class="grade grade-${grade}">${grade}</span></p>
+      </div>
+      <div class="summaryActions">
+        <button id="retryBtn" class="menuButton">Retry&nbsp;Boss</button>
+        <button id="menuBtn"  class="menuButton">Main&nbsp;Menu</button>
+        <button id="newBtn"   class="menuButton">New&nbsp;Game</button>
+      </div>`
+    document.getElementById('retryBtn').onclick=()=>location.href=`game.html?saveId=${saveId}`;
+    document.getElementById('menuBtn').onclick =()=>location.href='index.html?directMain=1';
+    document.getElementById('newBtn').onclick  =()=>location.href='index.html';
+  </script>
+</body>
+</html>
+

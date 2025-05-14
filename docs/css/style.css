@@ -1,0 +1,183 @@
+@font-face {
+    font-family: 'Minecraft';
+    src: url('../assets/font/Minecraft.ttf') format('truetype');
+}
+
+/* Define Minecraft font for use */
+* {
+    font-family: 'Minecraft', Arial, sans-serif !important;
+}
+
+/* Reset body layout and set default font */
+body {
+    margin: 0;
+    overflow: hidden;
+    font-family: 'Minecraft', Arial, sans-serif;
+}
+
+/* Make canvas display as block to fill its container */
+canvas {
+    display: block;
+}
+
+/* Intro screen title image styling */
+#introScreen #titleImage {
+    position: absolute;
+    top: 10%;
+    left: 50%;
+    transform: translateX(-50%) scale(1.25);
+    max-width: 400px;
+    mix-blend-mode: lighten;
+    animation: glow 2s ease-in-out infinite alternate;
+}
+
+/* Glow effect keyframes for intro title */
+@keyframes glow {
+    from {
+        filter: drop-shadow(0 0 5px rgba(255,255,255,0.6));
+    }
+    to {
+        filter: drop-shadow(0 0 20px rgba(255,255,255,0.9));
+    }
+}
+
+/* Continue text positioning and pulsing animation */
+#introScreen #continueText {
+    position: absolute;
+    bottom: 10%;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 28px;
+    font-weight: normal;
+    color: white;
+    text-shadow: 2px 2px 5px rgba(0,0,0,0.7);
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+/* Define pulsing keyframes for continue text */
+@keyframes pulse {
+    0%, 100% {
+        transform: translateX(-50%) scale(1);
+    }
+    50% {
+        transform: translateX(-50%) scale(1.2);
+    }
+}
+
+/* Common menu container styling */
+.menuContainer {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 300px;
+    background: rgba(0,0,0,0.8);
+    color: white;
+    text-align: center;
+    font-size: 24px;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+/* Menu button base style */
+.menuButton {
+    width: 100%;
+    margin: 10px 0;
+    padding: 12px 0;
+    background: rgba(255,255,255,0.1);
+    border: 2px solid #fff;
+    border-radius: 4px;
+    font-size: 20px;
+    color: white;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.1s;
+}
+
+/* Button hover effect */
+.menuButton:hover {
+    background: rgba(255,255,255,0.2);
+    transform: scale(1.02);
+}
+
+/* Load/save list styling */
+.menuList {
+    list-style: none;
+    padding: 0;
+    margin: 10px 0;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+/* List item hover underline effect */
+.menuList li {
+    margin: 5px 0;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.menuList li:hover {
+    text-decoration: underline;
+}
+
+/* Load container full-width scrollable */
+.loadContainer {
+    position: absolute;
+    top: 5%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-height: 90vh;
+    background: rgba(0, 0, 0, 0.8);
+    padding: 20px;
+    border-radius: 8px;
+    overflow-y: auto;
+}
+
+/* Wrapper for scrollable table */
+.tableContainer {
+    width: 100%;
+    overflow-y: auto;
+}
+
+/* Table styling for load game list */
+.loadTable {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.loadTable th,
+.loadTable td {
+    border: 1px solid #fff;
+    padding: 8px;
+    text-align: center;
+    color: #fff;
+}
+
+.loadTable th {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Pause menu container styling (reuses menuContainer) */
+.pauseContainer {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 300px;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    text-align: center;
+    font-size: 24px;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+/* Pause menu title styling */
+.pauseContainer h1 {
+    margin: 0 0 16px;
+    font-size: 28px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Pause menu buttons reuse .menuButton styles */
