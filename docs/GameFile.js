@@ -2123,7 +2123,7 @@ class Enemy {
 
      // Each enemy has its own attack cooldown time
      this.nextHitTime = 0;
-     this.hitCooldown = 800;
+     this.hitCooldown = 1000;
 
      this.contactDamage = 5; // Default contact damage
   
