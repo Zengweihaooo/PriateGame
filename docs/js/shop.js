@@ -10,15 +10,15 @@ const ITEMS = [
 ];
 const ENTRY_SET = new Set(['Phantom Dash','Iron Reversal','Crimson Drain']);
 const DESC = {
-  'Phantom Dash'      : 'Dash forward dealing damage along the path.',
-  'Ghost Cutter'      : 'Temporarily boosts attack power.',
-  'Runner’s Instinct' : 'Passive: kill refreshes Phantom Dash cooldown.',
-  'Iron Reversal'     : 'Creates a reflecting shield.',
-  'Anchor Field'      : 'Slows enemies in an area.',
-  'Guardian’s Will'   : 'Passive: damage in Anchor Field buffs next shield.',
-  'Crimson Drain'     : 'Attacks restore some HP.',
-  'Wrath Unchained'   : 'Charge-up 360° heavy strike.',
-  'Berserker’s Blood' : 'Passive: low HP greatly increases attack.'
+  'Phantom Dash'      : 'A dash skill. The character dashes forward and deals area damage along the path.',
+  'Ghost Cutter'      : 'An attack boost. Increases attack power for a short time.',
+  'Runner’s Instinct' : 'Passive: if you kill an enemy, your Phantom Dash skill will be refreshed.',
+  'Iron Reversal'     : 'A shield skill. Creates a shield that blocks damage and can reflect bullet attacks.',
+  'Anchor Field'      : 'Summons a slow-down field in a 360-degree area. Enemies that come close will be slowed down.',
+  'Guardian’s Will'   : 'Passive: enemies take damage while inside the Anchor Field skill, and the damage dealt will be added to the value of the next Iron Reversal skill.',
+  'Crimson Drain'     : 'A lifesteal skill. Attacks restore some health.',
+  'Wrath Unchained'   : 'A charge-up skill. After charging, it deals heavy damage to enemies in a 360-degree area and reduces damage taken while charging.',
+  'Berserker’s Blood' : 'Passive: when the player health is below a certain percentage, their attack power is greatly increased.'
 };
 
 /* ---------- Helpers ---------- */
