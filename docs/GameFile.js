@@ -1436,6 +1436,10 @@ class Level2 extends BaseLevel {
 
     this.pauseTimer = millis() + 10000;  // 10秒后触发黑洞暂停提示
 
+     setTimeout(() => {
+    this.setTipAnimated("Be careful, all ambush enemies have awoken...", 5000);
+  }, 40000); // 40秒后触发
+
     // FollowEnemy
     this.generateFollowEnemy(isHardMode? 40 : 25); 
     // CommonEnemy
@@ -1523,6 +1527,9 @@ class Level3 extends BaseLevel {
     // 初始化提示内容 + 定时消失
     this.setTipAnimated("Something's lurking in the dark... Run for your life!",8000);
 
+    setTimeout(() => {
+    this.setTipAnimated("Be careful, all ambush enemies have awoken...", 5000);
+  }, 40000); // 40秒后触发
 
     // 刷敌人
     
@@ -1604,7 +1611,9 @@ class Level4 extends BaseLevel{
       // 初始化提示内容 + 定时消失
       this.setTipAnimated("Something wicked this way comes! Dodge their bullets!", 8000);
   
-  
+      setTimeout(() => {
+    this.setTipAnimated("Be careful, all ambush enemies have awoken...", 5000);
+  }, 40000); // 40秒后触发
      
   
       // BulletEnemy（弹幕怪）
