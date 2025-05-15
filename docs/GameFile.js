@@ -1477,7 +1477,7 @@ class Level2 extends BaseLevel {
      
 
     // FollowEnemy
-    this.generateFollowEnemy(isHardMode? 30 : 25); 
+    this.generateFollowEnemy(isHardMode? 30 : 20); 
     // CommonEnemy
     this.generateCommonEnemy(isHardMode? 35 : 30); 
 
@@ -2125,7 +2125,7 @@ class Enemy {
      this.nextHitTime = 0;
      this.hitCooldown = 800;
 
-     this.contactDamage = 10; // Default contact damage
+     this.contactDamage = 5; // Default contact damage
   
   
   }
@@ -2192,8 +2192,8 @@ class FollowEnemy extends Enemy {
   constructor(x, y) {
     super(x, y);
     this.r = 35;
-    this.hp = new HPSystem(100); 
-    this.contactDamage = 15; // 接触伤害
+    this.hp = new HPSystem(100);
+    this.contactDamage = 10; // 接触伤害
     this.scaleFactor = 2;//大小
     this.spriteImg = follow_gif;  // 比如 bulletEnemyImg
     this.flip = false;  // 初始是否翻转，可以动态更新
@@ -2256,7 +2256,7 @@ class AmbushEnemy extends Enemy {
     super(x, y); // ✅ 删除 r 和 mode 参数
     this.r = 40; // ✅ 设置自己的半径
     this.hp = new HPSystem(80); // ✅ 设置自己的血量（可选）
-    this.contactDamage = 15; // 接触伤害
+    this.contactDamage = 5; // 接触伤害
     this.scaleFactor = 2;//大小
     this.ambushImg = ambush_gif;   // 伏击状态的图像
     this.dashGif = ambushactive_gif;       // 冲刺状态的 GIF 动画
@@ -2339,7 +2339,7 @@ class StealthEnemy extends Enemy {
     super(x, y); // ✅ 简化构造函数
     this.r = 35;
     this.hp = new HPSystem(100);
-    this.contactDamage = 20; // 接触伤害
+    this.contactDamage = 10; // 接触伤害
     this.scaleFactor = 2;//大小
     this.spriteImg = stealth_gif;  // 比如 bulletEnemyImg
     this.flip = false;  // 初始是否翻转，可以动态更新
