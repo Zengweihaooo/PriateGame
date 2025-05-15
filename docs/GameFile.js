@@ -1477,9 +1477,9 @@ class Level2 extends BaseLevel {
      
 
     // FollowEnemy
-    this.generateFollowEnemy(isHardMode? 30 : 20); 
+    this.generateFollowEnemy(isHardMode? 30 : 15); 
     // CommonEnemy
-    this.generateCommonEnemy(isHardMode? 35 : 30); 
+    this.generateCommonEnemy(isHardMode? 35 : 20); 
 
     //时间柱
     this.generateTimeBonus(3); // 刷奖励物
