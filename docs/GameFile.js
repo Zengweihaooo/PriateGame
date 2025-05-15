@@ -481,6 +481,8 @@ if (gameOver) {
 function updateTimer() {
   let elapsedTime = (millis() - startTime) / 1000;
   remainingTime = max(0, timer - elapsedTime);
+
+  /*
   // ✅ 倒计时到 20 秒，强制所有伏击怪冲刺（只触发一次）
   if (!ambushForceDashTriggered && remainingTime <= 20) {
     ambushForceDashTriggered = true;
@@ -499,7 +501,28 @@ function updateTimer() {
       }
     }
     console.log("⚡ 所有伏击怪已强制进入冲刺状态");
+  }*/
+
+    if (
+  !ambushForceDashTriggered &&
+  remainingTime <= 20 &&
+  levelManager?.currentLevel?.enableAmbushWarning
+) {
+  ambushForceDashTriggered = true;
+
+  levelManager.currentLevel.setTipAnimated?.(
+    "Be careful, all ambush enemies have awoken...",
+    5000
+  );
+
+  for (let enemy of enemies) {
+    if (enemy instanceof AmbushEnemy && !enemy.isDashing) {
+      enemy.startDash();
+    }
   }
+    console.log("⚡ 所有伏击怪已强制进入冲刺状态");
+}
+
   
 
   if (remainingTime <= 0) {
@@ -956,6 +979,8 @@ class BaseLevel {
     this.tipStartTime = 0;            // 动画开始时间
     this.tipCharDelay = 40;           // 每个字符的显示间隔（毫秒）
 
+     this.enableAmbushWarning = true;  // 默认开启伏击提示
+
   }
 
   start() {
@@ -972,8 +997,8 @@ class BaseLevel {
     timeBonuses.length = 0;
 
    
-score = lastCheckpointScore;
-console.log("使用 lastCheckpointScore 初始化分数:", score);
+    score = lastCheckpointScore;
+  console.log("使用 lastCheckpointScore 初始化分数:", score);
 
 
   }
@@ -1693,6 +1718,7 @@ class Level5 extends BaseLevel{
   
       this.tip = "So you've made it this far... Final battle begins now!";
       this.tipExpireTime = millis() + 10000;  // 初始提示显示10秒
+      this.enableAmbushWarning = false;  //  第五关禁用伏击提示
   }
 
   start() {
