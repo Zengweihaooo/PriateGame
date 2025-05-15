@@ -1474,7 +1474,7 @@ class Level2 extends BaseLevel {
   update() {
     super.update();
     if (this.stage === 1) {
-      updateAmbushSpawn (isHardMode ? 8 : 5); // ✅ 每帧尝试生成伏击怪
+      updateAmbushSpawn (isHardMode ? 9 : 5); // ✅ 每帧尝试生成伏击怪
         
       // 检查黑洞提示是否触发
         if (!this.pauseShown && millis() > this.pauseTimer) {
@@ -1543,10 +1543,10 @@ class Level3 extends BaseLevel {
     // 刷敌人
    
     // FollowEnemy
-    this.generateFollowEnemy(isHardMode? 40 : 20); 
+    this.generateFollowEnemy(isHardMode? 25 : 20); 
 
     // CommonEnemy
-    this.generateCommonEnemy(isHardMode? 50: 30); 
+    this.generateCommonEnemy(isHardMode? 35: 30); 
 
     // 刷黑洞
     this.generateDangerBlackHole(isHardMode? 5 : 3); // 刷危险黑洞
@@ -1569,7 +1569,7 @@ class Level3 extends BaseLevel {
     if (this.stage === 1) {
 
         updateStealthSpawn(isHardMode ? 22 : 15); // ✅ 每帧尝试生成隐身怪
-        updateAmbushSpawn(isHardMode ? 13 : 6); // ✅ 每帧尝试生成伏击怪
+        updateAmbushSpawn(isHardMode ? 9 : 6); // ✅ 每帧尝试生成伏击怪
       // 检查完成
       if (!this.finished && remainingTime <= 0) {
         this.stage = 2;
@@ -1626,10 +1626,10 @@ class Level4 extends BaseLevel{
       this.generateBulletEnemy(isHardMode? 5 : 3); // 刷弹幕怪
   
       // FollowEnemy
-      this.generateFollowEnemy(isHardMode? 15 : 20);
+      this.generateFollowEnemy(isHardMode? 20 : 20);
   
       // CommonEnemy
-      this.generateCommonEnemy(isHardMode? 20 : 30);
+      this.generateCommonEnemy(isHardMode? 30 : 30);
   
       // 刷黑洞
       this.generateDangerBlackHole(isHardMode? 4 : 2); // 刷危险黑洞
@@ -1650,7 +1650,7 @@ update() {
   super.update();
   if (this.stage === 1) {
      updateStealthSpawn(isHardMode ? 28 : 20); // ✅ 每帧尝试生成隐身怪
-        updateAmbushSpawn(isHardMode ? 15 : 9); // ✅ 每帧尝试生成伏击怪
+        updateAmbushSpawn(isHardMode ? 12 : 9); // ✅ 每帧尝试生成伏击怪
     // 检查完成
     if (!this.finished && remainingTime <= 0) {
       this.stage = 2;
@@ -3406,7 +3406,7 @@ class AttackBoostSkill extends Skill {
   class DashSkill extends Skill {
   constructor(player,enemies) {
     super("Phantom Dash", "", 4); // 冲刺技能冷却
-    this.dashDamage = 20; // 冲刺时撞敌造成5伤害
+    this.dashDamage = 30; // 冲刺时撞敌造成5伤害
     this.isDashing = false; // 冲刺中标记
     this.originalSpeed = 0; // 记录冲刺前的速度
     this.dashedEnemies = []; // 已经撞过的敌人列表
