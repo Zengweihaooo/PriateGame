@@ -1877,9 +1877,9 @@ class Player {
     this.defaultSpeed = 4.5;           // 你的正常速度值（按需修改）
 
 
-    
-    this.hp = new HPSystem(600); // 初始血量100
-    
+
+    this.hp = new HPSystem(1000); // 初始血量1000
+
 
     this.baseAttack = 40;  // 原本的基础攻击力
     this.buffAttack = this.baseAttack; // 当前生效的攻击力（默认 = 基础）
