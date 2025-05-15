@@ -483,6 +483,15 @@ function updateTimer() {
   // ✅ 倒计时到 20 秒，强制所有伏击怪冲刺（只触发一次）
   if (!ambushForceDashTriggered && remainingTime <= 20) {
     ambushForceDashTriggered = true;
+
+    // ✅ 正确触发提示（使用关卡的 setTipAnimated 方法）
+    if (levelManager?.currentLevel?.setTipAnimated) {
+      levelManager.currentLevel.setTipAnimated(
+        "Be careful, all ambush enemies have awoken...",
+        5000
+      );
+    }
+
     for (let enemy of enemies) {
       if (enemy instanceof AmbushEnemy && !enemy.isDashing) {
         enemy.startDash(); // 调用伏击怪的冲刺函数（你已有这个函数）
@@ -673,7 +682,8 @@ function keyReleased() {
   resumeScore = score;                              // 保留分数 or 重置，看需要
   startTime = millis();
 
-  player.speed = player.baseSpeed || 4;  // 重置速度（4 是默认值）
+  player.speed = player.speed || 4.5;  // 重置速度（4 是默认值）
+  console.log("玩家速度已重置：", player.speed);
 
  // 🟢 清空敌人、子弹、奖励
   enemies.length = 0;
@@ -685,6 +695,8 @@ function keyReleased() {
   stealthSpawnedCount = 0;
   ambushTimer = 0;
   stealthTimer = 0;
+
+  ambushForceDashTriggered = false;  // ✅ 重新开始时允许再次触发
 
 
   // 获取当前关卡索引
@@ -829,7 +841,7 @@ function updateStealthSpawn(max) {
 function updateAmbushSpawn(max) {
   ambushTimer++;
 
-  if (ambushTimer % 360 === 0) { // 每 6 秒
+  if (ambushTimer % 240 === 0) { // 每 4 秒
     if (ambushSpawnedCount >= max) return;
 
     let dir = player.getDirection?.() || createVector(1, 0);
@@ -1412,6 +1424,7 @@ class Level2 extends BaseLevel {
   constructor() {
       super("Level 2");
       this.levelNumber = 2;
+     
 
       // 阶段控制：
       // 0: 初始提示
@@ -1427,6 +1440,7 @@ class Level2 extends BaseLevel {
   }
   start() {
     super.start();
+    
     console.log("Level2 已开始");
 
     // 初始化提示内容 + 定时消失
@@ -1436,14 +1450,12 @@ class Level2 extends BaseLevel {
 
     this.pauseTimer = millis() + 10000;  // 10秒后触发黑洞暂停提示
 
-     setTimeout(() => {
-    this.setTipAnimated("Be careful, all ambush enemies have awoken...", 5000);
-  }, 40000); // 40秒后触发
+     
 
     // FollowEnemy
-    this.generateFollowEnemy(isHardMode? 40 : 25); 
+    this.generateFollowEnemy(isHardMode? 30 : 25); 
     // CommonEnemy
-    this.generateCommonEnemy(isHardMode? 50 : 30); 
+    this.generateCommonEnemy(isHardMode? 35 : 30); 
 
     //时间柱
     this.generateTimeBonus(3); // 刷奖励物
@@ -1462,7 +1474,7 @@ class Level2 extends BaseLevel {
   update() {
     super.update();
     if (this.stage === 1) {
-      updateAmbushSpawn (isHardMode ? 9 : 5); // ✅ 每帧尝试生成伏击怪
+      updateAmbushSpawn (isHardMode ? 8 : 5); // ✅ 每帧尝试生成伏击怪
         
       // 检查黑洞提示是否触发
         if (!this.pauseShown && millis() > this.pauseTimer) {
@@ -1527,12 +1539,9 @@ class Level3 extends BaseLevel {
     // 初始化提示内容 + 定时消失
     this.setTipAnimated("Something's lurking in the dark... Run for your life!",8000);
 
-    setTimeout(() => {
-    this.setTipAnimated("Be careful, all ambush enemies have awoken...", 5000);
-  }, 40000); // 40秒后触发
-
+  
     // 刷敌人
-    
+   
     // FollowEnemy
     this.generateFollowEnemy(isHardMode? 40 : 20); 
 
@@ -1611,9 +1620,6 @@ class Level4 extends BaseLevel{
       // 初始化提示内容 + 定时消失
       this.setTipAnimated("Something wicked this way comes! Dodge their bullets!", 8000);
   
-      setTimeout(() => {
-    this.setTipAnimated("Be careful, all ambush enemies have awoken...", 5000);
-  }, 40000); // 40秒后触发
      
   
       // BulletEnemy（弹幕怪）
@@ -1843,6 +1849,7 @@ class Player {
     this.pos = createVector(x, y);
     this.r = 35;
     this.speed = 4.5;
+    this.defaultSpeed = 4.5;           // 你的正常速度值（按需修改）
 
 
     
@@ -1869,7 +1876,7 @@ class Player {
     this.pendingBonusShield = 0; // 存储由电击被动转化的护盾值
     this.isInBloodFury = false; // 是否处于血怒状态
 
-    this.defaultSpeed = 4;           // 你的正常速度值（按需修改）
+    
     this.inBlackHole = false;        // 是否在黑洞内
     this.blackHoleExitTime = null;   // 上次退出黑洞的时间
 
