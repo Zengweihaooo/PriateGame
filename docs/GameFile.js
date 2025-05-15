@@ -1951,7 +1951,7 @@ vel: createVector(random(-1, 1), random(-2, -1)), // ← 更强的上飘速度
     
     
     if (this.blackHoleExitTime) {
-    if (millis() - this.blackHoleExitTime > 6000) {  // 8秒
+    if (millis() - this.blackHoleExitTime > 2000) {  // 8秒
       this.speed = this.defaultSpeed;  // 恢复速度
       this.blackHoleExitTime = null;   // 清除定时器
     }
@@ -3514,7 +3514,7 @@ class AttackBoostSkill extends Skill {
       setTimeout(() => {
         this.player.isInvincibleFromDash = false;
         console.log("冲刺后的无敌时间结束");
-      }, 1500);
+      }, 2000);
       
       if (this.totalDamage > 0) {
         for (let skill of this.player.selectedSkills) {
