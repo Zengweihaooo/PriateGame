@@ -61,7 +61,7 @@ let enemies = [];
 let zoom = 1;
 let gameOver = false;
 let score; // 记录得分
-let resumeScore = null;
+
 let timer = 60; // 设定倒计时时间（秒）
 let startTime; // 记录游戏开始的时间
 
@@ -124,6 +124,7 @@ let ambushSpawnedCount = 0; // 生成的伏击怪数量
 let ambushForceDashTriggered = false;
 
 let isHardMode = false; // 是否开启困难模式
+let lastCheckpointScore = 0; // 关卡起点分数
 
 
 const GIF_POOL = {
@@ -679,7 +680,8 @@ function keyReleased() {
   gameOver = false;
   player.hp.currentHP = player.hp.maxHP;  // 复活时满血（保险）
   player.hp.isDead = false; // 重置死亡状态
-  resumeScore = score;                              // 保留分数 or 重置，看需要
+  score = lastCheckpointScore;
+  console.log("🔄 分数已重置为上一关起点：", score);
   startTime = millis();
 
   player.speed = player.speed || 4.5;  // 重置速度（4 是默认值）
@@ -885,6 +887,11 @@ class LevelManager {
   //修改关卡背景zc5.9
   loadLevel(index) {
   const prevLevel = this.currentLevel; 
+
+  //记录当前分数为“关卡起点分数”
+   lastCheckpointScore = score;
+  console.log("✅ 进入关卡前保存分数为：", lastCheckpointScore);
+
   this.currentLevel = this.levels[index];
   console.log(`加载 Level ${index + 1}`);
 
@@ -964,17 +971,9 @@ class BaseLevel {
     bullets.length = 0;
     timeBonuses.length = 0;
 
-
-    // score = this.startingScore || 0;
-    // 优先使用 resumeScore，如果没有才使用 startingScore
-  if (resumeScore !== null) {
-    score = resumeScore;
-    console.log("使用 resumeScore 恢复分数:", score);
-    resumeScore = null;  // 用过一次就清空，防止影响后续关卡
-  } else {
-    score = this.startingScore || 0;
-    console.log("使用 startingScore 初始化分数:", score);
-}
+   
+score = lastCheckpointScore;
+console.log("使用 lastCheckpointScore 初始化分数:", score);
 
 
   }
