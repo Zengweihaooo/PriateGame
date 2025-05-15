@@ -110,9 +110,10 @@
   <script>
     window.addEventListener('introFinished', function(){
       const audio = document.getElementById('bgm');
-      audio.volume = 0.3;
+      audio.volume = 0.01;
       audio.play();
-      const duration = 5000;
+      audio.targetVolume = 0.01;
+      const duration = 500;
       const steps = 50;
       const interval = duration / steps;
       let step = 0;
