@@ -1169,7 +1169,7 @@ generateHealBlackHole(max) {
   generateTimeBonus(max) {
     for (let i = 0; i < max; i++) {
       let pos = generateValidEnemyPosition(300);  // 
-      timeBonuses.push(new TimeBonus(pos.x, pos.y, 15));
+      timeBonuses.push(new TimeBonus(pos.x, pos.y,5));
     }
     console.log("生成时间奖励,数量:", max);
   }  // 通用结算画面
